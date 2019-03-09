@@ -42,7 +42,7 @@
 			turnNumber++;
 			var turnCounter = document.getElementById("turnCounter");
 			turnCounter.innerHTML = "Current Turn: " + turnNumber;
-
+			// growFlora();
 			updateFlora();
 		}
 
@@ -58,18 +58,22 @@
 	</body>
 
 	<script type="text/javascript">
-mapElement = document.getElementById('map');
+		mapElement = document.getElementById('map');
 		logicalMap = [];
 		turnNumber = 0;
-
 		maxFloraGreenHexValue = 255;
 		maxFloraGenerationLevel = 0.7;
-		maxCrittersGenerationLevel = 0.7;
+		maxCrittersGenerationLevel = 0.4;
 		
 
 		function getElement(x,y){
 			var rowElement = mapElement.children[y];
 			return rowElement.children[x];
+		}
+
+		function updateElement(x,y,element){
+			var rowElement = mapElement.children[y];
+			rowElement.children[x] = element;
 		}
 
 		function getRows() {
@@ -79,25 +83,20 @@ mapElement = document.getElementById('map');
 		function addRow() {
 			var rowElement = document.createElement("div");
 			rowElement.className = "row";
-
 			mapElement.appendChild(rowElement);
 			logicalMap.push(rowElement);
 			return rowElement;
 		}
 
 		function displayCellStats(event) {
-			var consoleElement = document.getElementById('console');
-			consoleElement.innerHTML = JSON.stringify(event.target.props);
-
+			document.getElementById('console').innerHTML = JSON.stringify(event.target.props);
 		}
 
 		function addCell(rowIndex) {
 			var newCell = document.createElement("div");
 			newCell.className = "cell";
 			mapElement.children[rowIndex].appendChild(newCell);
-			newCell.props = {
-
-			};
+			newCell.props = {};
 			newCell.onmouseover = displayCellStats;
 		}
 
@@ -110,14 +109,25 @@ mapElement = document.getElementById('map');
 			}
 		}
 
-		var e = getElement(3,3);
-		// e.innerHTML = "D";
-
 		function updateFlora() {
 			var rows = getRows();
+
+			//Grow flora
 			for(var y = 0 ; y < rows.length ; y++) {
 				var row = rows[y];
+				for(var x = 0 ; x <  row.children.length ; x++) {
+					var element = getElement(x,y);
+					// element.
+					 element.props.bush = parseFloat(element.props.bush) + 0.05;
+					// element.style = "background-color: rgb(0," + element.props.bush * maxFloraGreenHexValue + ",0);";
+										updateElement(x,y,element);
 
+				}
+			}
+
+			//Update props colour
+			for(var y = 0 ; y < rows.length ; y++) {
+				var row = rows[y];
 				for(var x = 0 ; x <  row.children.length ; x++) {
 					var element = getElement(x,y);
 					element.style = "background-color: rgb(0," + element.props.bush * maxFloraGreenHexValue + ",0);"
@@ -125,21 +135,23 @@ mapElement = document.getElementById('map');
 			}
 		}
 
+
 		function generateInitialFlora() {
 			var rows = getRows();
 			for(var y = 0 ; y < rows.length ; y++) {
 				var row = rows[y];
-
 				for(var x = 0 ; x <  row.children.length ; x++) {
 					var element = getElement(x,y);
 
 					var bushValue = Math.random() * maxFloraGenerationLevel;
 					var crittersValue =Math.random() * maxCrittersGenerationLevel;
-					element.props = {//.toFixed(dec)
+					element.props = {
 						bush: bushValue.toFixed(3),
-						critters: crittersValue.toFixed(3),
+						critters: crittersValue.toFixed(1),
 					};
-					
+
+					updateElement(x,y,element);
+
 				}
 			}
 			updateFlora();
@@ -148,6 +160,4 @@ mapElement = document.getElementById('map');
 		generateInitialFlora();
 
 	</script>
-
-
 </html>
