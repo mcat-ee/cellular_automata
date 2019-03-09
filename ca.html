@@ -1,0 +1,124 @@
+<html>
+	<style type="text/css">
+		#map {
+			display:flex;
+			flex-direction: column;
+			width:100%;
+			height:75%;
+			border:2px solid black;
+
+		}
+
+		#console {
+			width:100%;
+			height:25%;
+			padding-top: 25px;
+		}
+		.row{
+			display:flex;
+			flex-direction: row;
+			flex-grow:1;
+		}
+
+		.cell{
+			flex-grow: 1;
+			border:2px solid #2eb9ce;
+		}
+
+		.button{
+			background-color: #DE781F;
+		}
+
+		.rowElement {
+			flex-grow:1;
+			text-align: center;
+			min-height:25px;
+			padding: 10px;
+		}
+	</style>
+	<body>
+		<div id="map"></div>
+		<div class="row">
+			<div class="button rowElement">Next Turn</div>
+			<div class="rowElement">Current Turn: 0</div>
+		</div>
+		<div id="console"></div>
+	</body>
+
+	<script type="text/javascript">
+		mapElement = document.getElementById('map');
+		logicalMap = [];
+		turnNumber = 0;
+
+		maxFloraGreenHexValue = 255;
+		maxFloraGenerationLevel = 0.7;
+		maxCrittersGenerationLevel = 0.7;
+
+		function getElement(x,y){
+			var rowElement = mapElement.children[y];
+			return rowElement.children[x];
+		}
+
+		function getRows() {
+			return mapElement.children;
+		}
+
+		function addRow() {
+			var rowElement = document.createElement("div");
+			rowElement.className = "row";
+
+			mapElement.appendChild(rowElement);
+			logicalMap.push(rowElement);
+			return rowElement;
+		}
+
+		function displayCellStats(event) {
+			var consoleElement = document.getElementById('console');
+			consoleElement.innerHTML = JSON.stringify(event.target.props);
+
+		}
+
+		function addCell(rowIndex) {
+			var newCell = document.createElement("div");
+			newCell.className = "cell";
+			mapElement.children[rowIndex].appendChild(newCell);
+			newCell.props = {
+
+			};
+			newCell.onmouseover = displayCellStats;
+		}
+
+		var numberOfRows = 10;
+		var widthOfRow = 20;
+		for(var i = 0 ; i < numberOfRows ; i++) {
+			var newRow = addRow();
+			for(var x = 0 ; x < widthOfRow ; x++) {
+				addCell(i);
+			}
+		}
+
+		var e = getElement(3,3);
+		// e.innerHTML = "D";
+
+		function generateInitialFlora() {
+			var rows = getRows();
+			for(var y = 0 ; y < rows.length ; y++) {
+				var row = rows[y];
+
+				for(var x = 0 ; x <  row.children.length ; x++) {
+					var element = getElement(x,y);
+					element.props = {
+						bush: Math.random() * maxFloraGenerationLevel,
+						critters: Math.random() * maxCrittersGenerationLevel,
+					};
+					element.style = "background-color: rgb(0," + element.props.bush * maxFloraGreenHexValue + ",0);"
+				}
+			}
+		}
+
+		generateInitialFlora();
+
+	</script>
+
+
+</html>
