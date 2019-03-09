@@ -36,23 +36,36 @@
 			padding: 10px;
 		}
 	</style>
+	<script type="text/javascript">
+		function nextTurn() {
+			console.log("Tick");
+			turnNumber++;
+			var turnCounter = document.getElementById("turnCounter");
+			turnCounter.innerHTML = "Current Turn: " + turnNumber;
+
+			updateFlora();
+		}
+
+		
+	</script>
 	<body>
 		<div id="map"></div>
 		<div class="row">
-			<div class="button rowElement">Next Turn</div>
-			<div class="rowElement">Current Turn: 0</div>
+			<div onclick="nextTurn()" class="button rowElement">Next Turn</div>
+			<div id="turnCounter" class="rowElement" >Current Turn: 0</div>
 		</div>
 		<div id="console"></div>
 	</body>
 
 	<script type="text/javascript">
-		mapElement = document.getElementById('map');
+mapElement = document.getElementById('map');
 		logicalMap = [];
 		turnNumber = 0;
 
 		maxFloraGreenHexValue = 255;
 		maxFloraGenerationLevel = 0.7;
 		maxCrittersGenerationLevel = 0.7;
+		
 
 		function getElement(x,y){
 			var rowElement = mapElement.children[y];
@@ -100,6 +113,18 @@
 		var e = getElement(3,3);
 		// e.innerHTML = "D";
 
+		function updateFlora() {
+			var rows = getRows();
+			for(var y = 0 ; y < rows.length ; y++) {
+				var row = rows[y];
+
+				for(var x = 0 ; x <  row.children.length ; x++) {
+					var element = getElement(x,y);
+					element.style = "background-color: rgb(0," + element.props.bush * maxFloraGreenHexValue + ",0);"
+				}
+			}
+		}
+
 		function generateInitialFlora() {
 			var rows = getRows();
 			for(var y = 0 ; y < rows.length ; y++) {
@@ -107,13 +132,17 @@
 
 				for(var x = 0 ; x <  row.children.length ; x++) {
 					var element = getElement(x,y);
-					element.props = {
-						bush: Math.random() * maxFloraGenerationLevel,
-						critters: Math.random() * maxCrittersGenerationLevel,
+
+					var bushValue = Math.random() * maxFloraGenerationLevel;
+					var crittersValue =Math.random() * maxCrittersGenerationLevel;
+					element.props = {//.toFixed(dec)
+						bush: bushValue.toFixed(3),
+						critters: crittersValue.toFixed(3),
 					};
-					element.style = "background-color: rgb(0," + element.props.bush * maxFloraGreenHexValue + ",0);"
+					
 				}
 			}
+			updateFlora();
 		}
 
 		generateInitialFlora();
